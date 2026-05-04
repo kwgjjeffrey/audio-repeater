@@ -90,16 +90,23 @@ jobs:
           name: win-installer
           path: dist/win
 
-      - name: Create Release and upload installers
+      - name: Create Release (empty first)
         run: |
           TAG="${{ github.ref_name }}"
-          # Delete release if it already exists (e.g. from a failed previous run)
           gh release delete "$TAG" --yes 2>/dev/null || true
-          gh release create "$TAG" \
-            --title "Release $TAG" \
-            --generate-notes \
-            dist/mac/*.dmg \
-            dist/win/*.exe
+          gh release create "$TAG" --title "Release $TAG" --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Upload macOS DMG
+        run: gh release upload "${{ github.ref_name }}" dist/mac/*.dmg --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Upload Windows installer
+        run: gh release upload "${{ github.ref_name }}" dist/win/*.exe --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
