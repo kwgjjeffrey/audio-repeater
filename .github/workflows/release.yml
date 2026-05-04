@@ -29,9 +29,9 @@ jobs:
           ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
 
       - name: Build & package
-        run: npm run package:mac
+        # --publish never: let this job only produce the file; the release job uploads it
+        run: npm run package:mac -- --publish never
         env:
-          # Build unsigned DMG on CI — add CSC_LINK / CSC_KEY_PASSWORD later for notarization
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Upload DMG artifact
@@ -60,7 +60,7 @@ jobs:
           ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
 
       - name: Build & package
-        run: npm run package:win
+        run: npm run package:win -- --publish never
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
@@ -97,3 +97,5 @@ jobs:
           files: |
             dist/mac/*.dmg
             dist/win/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
