@@ -1,48 +1,31 @@
-name: Build Electron App
+name: CI
 
+# Fast check on every push / PR — build only, no packaging.
+# Packaging + GitHub Release is handled by release.yml on version tags.
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}
+    name: Build & Test
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build and Package (Mac)
-        if: matrix.os == 'macos-latest'
-        run: npm run package -- --mac
+      - name: Build (electron-vite)
+        run: npm run build
 
-      - name: Build and Package (Windows)
-        if: matrix.os == 'windows-latest'
-        run: npm run package -- --win
-
-      - name: Upload Mac Artifact
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-app
-          path: release/*.dmg
-
-      - name: Upload Windows Artifact
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-app
-          path: release/*.exe
+      - name: Run tests
+        run: npm test

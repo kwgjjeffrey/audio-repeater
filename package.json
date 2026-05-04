@@ -5,13 +5,15 @@
   "private": true,
   "main": "out/main/index.js",
   "scripts": {
-    "dev": "./node_modules/.bin/electron-vite dev",
-    "build": "./node_modules/.bin/electron-vite build",
-    "preview": "./node_modules/.bin/electron-vite preview",
-    "package": "./node_modules/.bin/electron-vite build && ./node_modules/.bin/electron-builder",
-    "test": "./node_modules/.bin/vitest run",
-    "test:watch": "./node_modules/.bin/vitest",
-    "lint": "./node_modules/.bin/eslint ."
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-vite build && electron-builder",
+    "package:mac": "electron-vite build && electron-builder --mac",
+    "package:win": "electron-vite build && electron-builder --win",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -64,19 +66,19 @@
     "files": [
       "out"
     ],
-    "extraResources": [
-      {
-        "from": "node_modules/ffmpeg-static/ffmpeg",
-        "to": "ffmpeg"
-      }
-    ],
     "mac": {
       "target": "dmg",
-      "icon": "public/icon.icns"
+      "icon": "public/icon.icns",
+      "extraResources": [
+        { "from": "node_modules/ffmpeg-static/ffmpeg", "to": "ffmpeg" }
+      ]
     },
     "win": {
       "target": "nsis",
-      "icon": "public/icon.ico"
+      "icon": "public/icon.ico",
+      "extraResources": [
+        { "from": "node_modules/ffmpeg-static/ffmpeg.exe", "to": "ffmpeg.exe" }
+      ]
     }
   }
 }
