@@ -8,6 +8,7 @@ A desktop app for language learners. It automatically segments any audio or vide
 
 [⬇ Download latest release](https://github.com/kwgjjeffrey/audio-repeater/releases/latest)
 
+
 ⬇ Download a movie to try it out: 
 
 magnet:?xt=urn:btih:ef7edf8268fcbe0a45bed504f16a53c827e8f51f&dn=[电影天堂www.dytt89.com]狮子王BD中英双字.mp4
