@@ -5,7 +5,7 @@ A desktop app for language learners. It automatically segments any audio or vide
 ## Download
 
 **macOS (Apple Silicon)**
-[Download Audio Repeater v0.1.0 (.dmg)](https://github.com/kwgjjeffrey/audio-repeater/releases/download/v0.2.0/Audio.Repeater-0.1.0-arm64.dmg)
+[⬇ Download latest release](https://github.com/kwgjjeffrey/audio-repeater/releases/latest)
 
 > Windows support is coming. For now, see [Build from Source](#build-from-source) below.
 
