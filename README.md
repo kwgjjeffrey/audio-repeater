@@ -7,6 +7,9 @@ A desktop app for language learners. It automatically segments any audio or vide
 **macOS (Apple Silicon) & Windows**
 [⬇ Download latest release](https://github.com/kwgjjeffrey/audio-repeater/releases/latest)
 
+
+[⬇ Download a movie to try it out](magnet:?xt=urn:btih:ef7edf8268fcbe0a45bed504f16a53c827e8f51f&dn=[电影天堂www.dytt89.com]狮子王BD中英双字.mp4)
+
 ## Features
 
 - **Auto-segmentation** — drop any MP3, MP4, MKV, or other media file; the app detects silence boundaries and splits it into clean phrases automatically
