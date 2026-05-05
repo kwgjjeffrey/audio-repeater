@@ -306,6 +306,10 @@ function registerProjectHandlers(ipcMain) {
       }
     });
   });
+  ipcMain.handle("delete-project", async (_event, mediaHash) => {
+    const p = projectPath(mediaHash);
+    if (fs.existsSync(p)) fs.rmSync(p);
+  });
 }
 const YTDlpWrap = require("yt-dlp-wrap").default;
 const MEDIA_EXT_RE = /\.(mp3|mp4|m4a|wav|ogg|webm|flac|aac|mkv|mov|avi)(\?|#|$)/i;

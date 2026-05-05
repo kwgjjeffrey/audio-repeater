@@ -7,6 +7,7 @@ const api = {
   loadProject: (mediaHash) => electron.ipcRenderer.invoke("load-project", mediaHash),
   saveProject: (project) => electron.ipcRenderer.invoke("save-project", project),
   listProjects: () => electron.ipcRenderer.invoke("list-projects"),
+  deleteProject: (mediaHash) => electron.ipcRenderer.invoke("delete-project", mediaHash),
   platform: process.platform,
   onAnalysisProgress(cb) {
     const handler = (_event, pct) => cb(pct);

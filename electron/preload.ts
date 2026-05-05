@@ -9,6 +9,7 @@ const api: ElectronAPI = {
   loadProject: (mediaHash) => ipcRenderer.invoke('load-project', mediaHash),
   saveProject: (project) => ipcRenderer.invoke('save-project', project),
   listProjects: () => ipcRenderer.invoke('list-projects'),
+  deleteProject: (mediaHash) => ipcRenderer.invoke('delete-project', mediaHash),
   platform: process.platform,
 
   onAnalysisProgress(cb) {

@@ -90,6 +90,7 @@ export interface ElectronAPI {
   loadProject(mediaHash: string): Promise<Project | null>
   saveProject(project: Project): Promise<void>
   listProjects(): Promise<Project[]>
+  deleteProject(mediaHash: string): Promise<void>
   platform: string
   /** Subscribe to analysis progress updates (0–100). Returns an unsubscribe fn. */
   onAnalysisProgress(cb: (pct: number) => void): () => void

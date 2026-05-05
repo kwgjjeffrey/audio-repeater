@@ -55,6 +55,12 @@ export default function App() {
   // and also passed to useMediaElement so controls can drive it.
   const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement | null>(null)
 
+  const handleDeleteCurrent = useCallback(() => {
+    mediaRef.current?.pause()
+    resetPlayback()
+    useProjectStore.getState().reset()
+  }, [mediaRef, resetPlayback])
+
   const { togglePlay, seekToSegment, goToPrevSegment, goToNextSegment, toggleLoop } =
     useMediaElement(mediaRef, visibleSegments)
 
@@ -369,6 +375,7 @@ export default function App() {
           <PlaylistSidebar
             currentMediaHash={mediaHash}
             onOpenProject={handlePlaylistOpen}
+            onDeleteCurrent={handleDeleteCurrent}
           />
 
           {/* Center: empty state or player */}

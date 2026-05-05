@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PanelLeftOpen, PanelLeftClose, FileVideo, FileAudio, Clock } from 'lucide-react'
+import { PanelLeftOpen, PanelLeftClose, FileVideo, FileAudio, Clock, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api } from '../lib/ipc'
@@ -8,6 +8,7 @@ import type { Project } from '../types'
 interface PlaylistSidebarProps {
   currentMediaHash: string | null
   onOpenProject: (project: Project, filePath: string, mimeType: string) => void
+  onDeleteCurrent?: () => void
 }
 
 function formatDuration(ms: number): string {
@@ -25,8 +26,8 @@ function isVideo(mimeType?: string): boolean {
   return !!mimeType?.startsWith('video/')
 }
 
-export default function PlaylistSidebar({ currentMediaHash, onOpenProject }: PlaylistSidebarProps) {
-  const [open, setOpen] = useState(false)
+export default function PlaylistSidebar({ currentMediaHash, onOpenProject, onDeleteCurrent }: PlaylistSidebarProps) {
+  const [open, setOpen] = useState(true)
   const [projects, setProjects] = useState<Project[]>([])
 
   // Reload the playlist whenever the sidebar opens or a project changes
@@ -43,6 +44,15 @@ export default function PlaylistSidebar({ currentMediaHash, onOpenProject }: Pla
     if (!result) return
     const mimeType = result.mimeType ?? project.mimeType ?? 'video/mp4'
     onOpenProject(project, result.filePath, mimeType)
+  }
+
+  const handleDelete = async (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation()
+    await api.deleteProject(project.mediaHash)
+    setProjects((prev) => prev.filter((p) => p.id !== project.id))
+    if (project.mediaHash === currentMediaHash) {
+      onDeleteCurrent?.()
+    }
   }
 
   return (
@@ -85,31 +95,52 @@ export default function PlaylistSidebar({ currentMediaHash, onOpenProject }: Pla
               const video = isVideo(project.mimeType)
               const name = fileName(project.mediaPath)
               return (
-                <button
-                  key={project.id}
-                  onClick={() => handleSelect(project)}
-                  className={cn(
-                    'w-full flex items-start gap-2 px-3 py-2 text-left transition-colors',
-                    isCurrent
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground hover:bg-muted/60'
-                  )}
-                  title={project.mediaPath}
-                >
-                  {video ? (
-                    <FileVideo size={14} className="shrink-0 mt-0.5 opacity-60" />
-                  ) : (
-                    <FileAudio size={14} className="shrink-0 mt-0.5 opacity-60" />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium truncate leading-tight">{name}</p>
-                    <p className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                      <Clock size={9} />
-                      {formatDuration(project.durationMs)}
-                      <span className="ml-1">{project.segments.length} phrases</span>
-                    </p>
-                  </div>
-                </button>
+                <div key={project.id} className="group relative">
+                  <button
+                    onClick={() => handleSelect(project)}
+                    className={cn(
+                      'w-full flex items-start gap-2 px-3 py-2 text-left transition-colors pr-8',
+                      isCurrent
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-foreground hover:bg-muted/60'
+                    )}
+                    title={project.mediaPath}
+                  >
+                    {video ? (
+                      <FileVideo size={14} className="shrink-0 mt-0.5 opacity-60" />
+                    ) : (
+                      <FileAudio size={14} className="shrink-0 mt-0.5 opacity-60" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium truncate leading-tight">{name}</p>
+                      <p className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+                        <Clock size={9} />
+                        {formatDuration(project.durationMs)}
+                        <span className="ml-1">{project.segments.length} phrases</span>
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Delete button */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={(e) => handleDelete(e, project)}
+                        className={cn(
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded transition-all',
+                          'opacity-0 group-hover:opacity-100',
+                          isCurrent
+                            ? 'text-primary/60 hover:text-destructive hover:bg-destructive/10'
+                            : 'text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10'
+                        )}
+                        aria-label={`Remove ${name} from library`}
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="text-xs">Remove from library</TooltipContent>
+                  </Tooltip>
+                </div>
               )
             })
           )}

@@ -1,5 +1,5 @@
 import { app, IpcMain } from 'electron'
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import type { Project } from '../../src/renderer/types'
 
@@ -39,5 +39,10 @@ export function registerProjectHandlers(ipcMain: IpcMain): void {
         return []
       }
     })
+  })
+
+  ipcMain.handle('delete-project', async (_event, mediaHash: string): Promise<void> => {
+    const p = projectPath(mediaHash)
+    if (existsSync(p)) rmSync(p)
   })
 }

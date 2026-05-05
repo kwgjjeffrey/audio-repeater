@@ -47,13 +47,13 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
           ref={ref}
           onClick={(e) => onClick(segment, e.shiftKey)}
           className={cn(
-            'w-full text-left px-3 py-2.5 rounded-lg transition-all duration-100 cursor-pointer select-none pr-20',
+            'w-full text-left px-3 py-2.5 rounded-lg transition-all duration-100 cursor-pointer select-none pr-20 outline-none',
             'border-l-2',
             isGroup && !isCurrent && !isSelected && 'border-l-violet-300 bg-violet-50/40',
-            isGroup && isCurrent && !isSelected && 'border-l-violet-500 bg-violet-100/70 text-violet-900',
-            isGroup && isSelected && 'border-l-violet-500 bg-violet-500/90 text-white',
-            !isGroup && isCurrent && !isSelected && 'border-l-primary bg-primary/8 text-primary',
-            !isGroup && isSelected && 'border-l-primary bg-primary/90 text-primary-foreground',
+            isGroup && isCurrent && 'border-l-violet-500 bg-violet-100 text-violet-900',
+            isGroup && !isCurrent && isSelected && 'border-l-violet-500 bg-violet-500/90 text-white',
+            !isGroup && isCurrent && 'border-l-primary bg-primary/15 text-primary',
+            !isGroup && !isCurrent && isSelected && 'border-l-primary bg-primary/90 text-primary-foreground',
             !isGroup && !isCurrent && !isSelected &&
               'border-l-transparent text-foreground hover:bg-muted/50 hover:border-l-muted-foreground/30'
           )}
@@ -70,15 +70,17 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
               className={cn(
                 'shrink-0 h-5 rounded-md flex items-center justify-center text-[10px] font-semibold',
                 isGroup ? 'px-1.5 min-w-6' : 'w-5',
-                isSelected
-                  ? 'bg-white/15 text-white/90'
-                  : isGroup && isCurrent
-                    ? 'bg-violet-200 text-violet-700'
-                    : isGroup
-                      ? 'bg-violet-100/80 text-violet-600'
-                      : isCurrent
-                        ? 'bg-primary/15 text-primary'
-                        : 'bg-muted/80 text-muted-foreground'
+                isGroup && isCurrent
+                  ? 'bg-violet-200 text-violet-700'
+                  : !isGroup && isCurrent
+                    ? 'bg-primary/15 text-primary'
+                    : isGroup && isSelected
+                      ? 'bg-white/15 text-white/90'
+                      : isGroup
+                        ? 'bg-violet-100/80 text-violet-600'
+                        : isSelected
+                          ? 'bg-white/15 text-white/90'
+                          : 'bg-muted/80 text-muted-foreground'
               )}
             >
               {isGroup ? `${segment.childIds!.length}×` : index + 1}
@@ -91,7 +93,7 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
                 <span
                   className={cn(
                     'text-[10px]',
-                    isSelected ? 'text-white/70' : 'text-muted-foreground'
+                    !isCurrent && isSelected ? 'text-white/70' : 'text-muted-foreground'
                   )}
                 >
                   {formatDuration(durationMs)}
@@ -100,20 +102,20 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
               <div
                 className={cn(
                   'h-0.5 rounded-full',
-                  isSelected ? 'bg-white/20' : isGroup ? 'bg-violet-100' : 'bg-muted'
+                  !isCurrent && isSelected ? 'bg-white/20' : isGroup ? 'bg-violet-100' : 'bg-muted'
                 )}
               >
                 <div
                   className={cn(
                     'h-full rounded-full transition-all',
-                    isSelected
-                      ? 'bg-white/50'
-                      : isGroup && isCurrent
-                        ? 'bg-violet-400'
-                        : isGroup
-                          ? 'bg-violet-300/70'
-                          : isCurrent
-                            ? 'bg-primary'
+                    isGroup && isCurrent
+                      ? 'bg-violet-400'
+                      : !isGroup && isCurrent
+                        ? 'bg-primary'
+                        : !isCurrent && isSelected
+                          ? 'bg-white/50'
+                          : isGroup
+                            ? 'bg-violet-300/70'
                             : 'bg-primary/35'
                   )}
                   style={{ width: `${barWidthPct.toFixed(1)}%` }}
@@ -127,7 +129,7 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
             <p
               className={cn(
                 'mt-1.5 ml-8 text-[11px] leading-snug line-clamp-2',
-                isSelected ? 'text-white/80' : isCurrent ? 'text-primary/80' : 'text-muted-foreground'
+                isCurrent ? 'text-primary/80' : isSelected ? 'text-white/80' : 'text-muted-foreground'
               )}
             >
               {segment.text}
@@ -145,7 +147,7 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
                   onClick={(e) => { e.stopPropagation(); onUngroup(segment.id) }}
                   className={cn(
                     'p-1.5 rounded-md transition-all opacity-0 group-hover:opacity-100',
-                    isSelected
+                    !isCurrent && isSelected
                       ? 'text-white/70 hover:text-white hover:bg-white/10'
                       : 'text-violet-500 hover:text-violet-700 hover:bg-violet-100'
                   )}
@@ -162,13 +164,13 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
           {!isGroup && (
             <div className={cn(
               'flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity',
-              isSelected && 'opacity-100'
+              isSelected && !isCurrent && 'opacity-100'
             )}>
               <button
                 onClick={(e) => { e.stopPropagation(); onExtendSelection(segment) }}
                 className={cn(
                   'px-1.5 py-0.5 rounded text-[9px] font-medium leading-tight transition-colors',
-                  isSelected
+                  !isCurrent && isSelected
                     ? 'bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30'
                     : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted'
                 )}
@@ -180,7 +182,7 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
                 onClick={(e) => { e.stopPropagation(); onExtendSelectionAsGroup(segment) }}
                 className={cn(
                   'px-1.5 py-0.5 rounded text-[9px] font-medium leading-tight transition-colors',
-                  isSelected
+                  !isCurrent && isSelected
                     ? 'bg-violet-400/30 text-primary-foreground hover:bg-violet-400/50'
                     : 'text-violet-500 hover:text-violet-700 hover:bg-violet-50'
                 )}
@@ -198,7 +200,7 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
               'p-1.5 rounded-md transition-all duration-150',
               isStarred ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
               isStarred ? 'hover:bg-amber-50 hover:scale-110' : 'hover:bg-muted hover:scale-110',
-              isSelected && 'opacity-100'
+              (!isCurrent && isSelected) && 'opacity-100'
             )}
             aria-label={isStarred ? 'Remove star' : 'Star this phrase'}
             aria-pressed={isStarred}
@@ -208,8 +210,8 @@ const SegmentItem = forwardRef<HTMLButtonElement, SegmentItemProps>(
               className={cn(
                 'transition-all duration-150',
                 isStarred && 'fill-amber-400 text-amber-400',
-                !isStarred && isSelected && 'text-primary-foreground/50 group-hover:text-primary-foreground/80',
-                !isStarred && !isSelected && 'text-muted-foreground/40 group-hover:text-amber-400'
+                !isStarred && (!isCurrent && isSelected) && 'text-primary-foreground/50 group-hover:text-primary-foreground/80',
+                !isStarred && (isCurrent || !isSelected) && 'text-muted-foreground/40 group-hover:text-amber-400'
               )}
             />
           </button>
